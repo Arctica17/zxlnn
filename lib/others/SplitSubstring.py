@@ -170,7 +170,7 @@ class LogicFormula(Scene):
         self.play(Write(arrow_5))
 
         # 创建中文文本
-        cn_5 = Text("化为前束范式").scale(0.5)
+        cn_5 = Text("消去存在量词").scale(0.5)
         cn_5.next_to(arrow_5, LEFT)
         self.play(Write(cn_5))
         self.wait(1)
