@@ -3,3 +3,9 @@
 *.pptx
 
 *.png
+
+/.vscode/
+
+**/__pycache__/
+
+**/media/
