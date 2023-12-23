@@ -7,14 +7,16 @@ class TextScene(ThreeDScene):
         text3 = Text("Conv-3 Size:2x2 Depth:4", font_size=24).to_edge(DOWN)
 
         self.play(Create(text1))
-        self.wait(5)
+        self.wait(3)
         self.play(FadeOut(text1))
 
         self.play(Create(text2))
-        self.wait(25)
+        self.wait(21)
         self.play(FadeOut(text2))
 
         self.play(Create(text3))
+        self.wait(15)
+        self.play(FadeOut(text3))
 
 if __name__ == "__main__":
     text_scene = TextScene()
