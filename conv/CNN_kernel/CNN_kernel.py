@@ -23,7 +23,7 @@ class CNNkernel(Scene):
     def show_convolution_layer(self):
         layer_title = Text("Convolution Layer", font_size=24).to_edge(UP)
         layer_desc = Text("Neurons connect to a local region for feature detection. Convolution kernels reduce parameters.", font_size=20, line_spacing=1.5).next_to(layer_title, DOWN, buff=0.5)
-        kernel_image = ImageMobject("kernel.gif").scale_to_fit_width(12).move_to(ORIGIN)
+        kernel_image = ImageMobject("convolution.gif").scale_to_fit_width(12).move_to(ORIGIN)
 
         self.animate_section(layer_title, kernel_image, layer_desc)
 
