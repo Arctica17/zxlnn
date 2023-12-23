@@ -1,8 +1,8 @@
 from manim import *
 from manim_ml.neural_network import Convolutional2DLayer, FeedForwardLayer, NeuralNetwork
 
-config.pixel_height = 700
-config.pixel_width = 1900
+config.pixel_height = 1080
+config.pixel_width = 1920
 config.frame_height = 7.0
 config.frame_width = 19.0
 
