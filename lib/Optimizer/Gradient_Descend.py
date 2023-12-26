@@ -1,8 +1,8 @@
 from manimlib import *
 import numpy as np
-from scipy.interpolate import interp1d
+from sympy import symbols, Poly, solve,re
 def numberical_grandient(f, x):
-    h = 1e-4                     #定义一个微小量，不能太小，太小计算机没法正确表示     #生成和x形状相同的数组   #计算所有偏导
+    h = 1e-6                     #定义一个微小量，不能太小，太小计算机没法正确表示     #生成和x形状相同的数组   #计算所有偏导
     x_h = x + h            #要计算的那个自变量加h，其余不变
     fxh1 = f(x_h)                     #计算f(x+h)
 
@@ -12,12 +12,15 @@ def numberical_grandient(f, x):
     grad = (fxh1 - fxh2) / (2*h)    #计算偏导
     return grad
 
+
+
+
 class PlotFunctionGraph(Scene):
     
     def construct(self):
         # 梯队下降有关参数
         # 学习率
-        lr=0.1
+        lr=0.05
         # 梯度阈值 小于该阈值时退出
         threshold=1e-5
         # 训练轮次
@@ -58,8 +61,9 @@ class PlotFunctionGraph(Scene):
         x, y = data.T
         # 使用 interp1d 进行插值
         z1=np.polyfit(x,y,4)
+        fu=z1[0]*x**4+z1[1]*x**3+z1[2]*x**2+z1[3]*x+z1[4]
         f1=np.poly1d(z1)
-        interp_func = interp1d(x, y, kind='cubic')
+        #interp_func = interp1d(x, y, kind='cubic')
 
         # 绘制差值后的图像
         fitting_graph = axes.get_graph(
@@ -68,7 +72,7 @@ class PlotFunctionGraph(Scene):
             use_smoothing=True,
             color=YELLOW,
         )
-        fitting_label = axes.get_graph_label(fitting_graph, "fitting label")
+        #fitting_label = axes.get_graph_label(fitting_graph, "fitting label")
         self.play(
             ShowCreation(fitting_graph),
             #ShowCreation(fitting_label),
@@ -79,21 +83,48 @@ class PlotFunctionGraph(Scene):
         target=2
         x=target
         y=f1(x)
+        
+        xx = symbols('x')
+        f1_sympy =Poly(f1(xx))
+        min_points = solve(f1_sympy.diff(), xx)
+        min_value=100
+        # 计算在这些点上的函数值
+        for point in min_points:
+            if min_value > f1(re(point)):
+                min_value=f1(re(point))
+        min_text=Tex(f"Min~is~{min_value:.5f}")
+        
+        self.play(ShowCreation(min_text.to_corner(UL)),run_time=0.2)
+    
         for i in range(epochs):
+            # 曲线上的沿梯度下降的点
             start_dot = Dot(fill_color=RED)
-            start_dot.move_to(axes.c2p(x, y))
-
+            start_dot.move_to(axes.c2p(x, y)).scale(0.25)
+            # 打印该点
+            dot_info=Tex(f"({round(x,4)},{round(y,5)})",font_size=20,color=RED).next_to(start_dot,UP)
             #self.play(ShowCreation(start_dot))
+            #VGroup(start_dot,dot_info).arrange(UP,buff=1)
             self.play(ShowCreation(start_dot),run_time=0.25)
-            self.wait(0.1)
+            self.play(ShowCreation(dot_info),run_time=0.25)
+            
+            # self.wait(0.1)
+            
+            
+            #group = VGroup(start_dot, dot_info)
+            #group.arrange(DOWN, buff=1)
+
+            #self.play(ShowCreation(start_dot), Write(dot_info),run_time=0.2)
+            self.wait(0.2) 
+            
+            
             
             grad=numberical_grandient(f1,x)
             grad_text=Tex(f"gradient~is~{grad:.5f}")
-            self.play(ShowCreation(grad_text.to_corner(UR)))
-            self.wait(0.25)
-            self.play(FadeOut(grad_text),run_time=0.25)
+            self.play(ShowCreation(grad_text.to_corner(UR)),run_time=0.2)
+            #self.wait(0.25)
             
-            if math.fabs(grad) <= threshold :
+            
+            if math.fabs(grad) <= threshold : 
                 break
             factor=(grad**2+1)**(1/2)
             if grad > 0:
@@ -113,9 +144,11 @@ class PlotFunctionGraph(Scene):
             y=f1(x)
             
             arrow = Arrow(start=start_dot.get_center(), end=end_dot.get_center()\
-                , buff=0.1,stroke_width=3)
+                , buff=0,stroke_width=5).set_color(RED)
             self.play(ShowCreation(arrow),run_time=0.1)
             self.wait(0.1)
+            self.play(FadeOut(grad_text),run_time=0.25)
             self.play(FadeOut(start_dot),run_time=0.01)
             self.play(FadeOut(arrow),run_time=0.01)
+            self.play(FadeOut(dot_info),run_time=0.25)
         
