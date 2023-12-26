@@ -152,7 +152,8 @@ class NeuralNetworkMobject(VGroup):
     def label_outputs(self, l):
         self.output_labels = VGroup()
         for n, neuron in enumerate(self.layers[-1].neurons):
-            label = MathTex(f"{l}_"+"{"+f"{n + 1}"+"}")
+            # label = MathTex(f"{l}_"+"{"+f"{n + 1}"+"}")
+            label = MathTex("{"+f"{n}"+"}")
             label.set_height(0.4 * neuron.get_height())
             label.move_to(neuron)
             self.output_labels.add(label)
@@ -179,3 +180,41 @@ class NeuralNetworkMobject(VGroup):
                 label.move_to(neuron)
                 self.output_labels.add(label)
         self.add(self.output_labels)
+    
+    def get_forward_animation(self):
+        args = SimpleNamespace(**self.settings)
+        animation = AnimationGroup
+        size = len(self.layer_sizes)
+        for i in range(len):
+            animation = AnimationGroup(*[
+                Create(neuron) for neuron in self.layers[i].neurons
+            ], lag_ratio=0)
+
+            if(self.layer_sizes[i] > args.max_shown_neurons):
+                animation += AnimationGroup(*[animation, 
+                                            Write(self.layers[i].dots), 
+                                            Create(self.layers[i].brace),
+                                            Write(self.layers[i].brace_label)])
+            
+            if(i == size - 1):
+                animation += AnimationGroup(*[animation,
+                                             Write(self.output_labels)])
+            
+            animation += Animation(Wait(1))
+
+            if(i < size - 1):
+                points = VGroup(*[
+                    Dot(color=ORANGE, radius=0.01) for x in self.edge_groups[i]
+                ])
+
+                tails = VGroup(*[
+                    TracedPath(point.get_center, dissipating_time=0.5, stroke_color=ORANGE) for point in points
+                ])
+
+                self.add(tails)
+                
+                animation += AnimationGroup(*[
+                    MoveAlongPath(d, l) for d, l in zip(points, self.edge_groups[i])
+                ])
+                
+                animation += Animation(Uncreate(points))
