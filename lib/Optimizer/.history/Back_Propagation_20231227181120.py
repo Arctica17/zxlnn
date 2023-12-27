@@ -1,35 +1,14 @@
 from manim import *
 import numpy as np
-def sigmoid(x):
-    return 1/(1+np.exp(-x))
-
+def sig(x):
+    return np.exp(x)/(1+np.exp(x))
 # 要拟合的目标函数
 def func(x_1,x_2):
     return x_1+x_2+x_1*x_2+1
-
 def p_sig(x):
-    return (1-sigmoid(x))*sigmoid(x)
+    return (x-sig(x))*sig(x)
 
-def ReLU(x):
-    # 写一个激活函数
-    return max(x, 0)
-def p_ReLU(x):
-    return 0 if x<=0 else 1
-
-act=ReLU
-p_act=p_ReLU
-lr=0.05
-act_name="ReLU"
-
-
-x_range=0.2
-x_step=0.05
-
-y_down=0
-y_up=0.2
-y_step=0.05
-
-
+lr=0.1
 
 class FBScene(Scene):
     def construct(self):
@@ -40,8 +19,7 @@ class FBScene(Scene):
         node5=Circle(radius=0.5).move_to(1*RIGHT+1.5*UP)
         node6=Circle(radius=0.5).move_to(1*RIGHT+1.5*DOWN)
         node7=Circle(radius=0.5).move_to(3*RIGHT+0*UP)
-        node5.set_color(ORANGE)
-        node6.set_color(ORANGE)
+        
         #self.wait(5)
         self.play(Create(node1))
         self.play(Create(node2))
@@ -88,7 +66,8 @@ class FBScene(Scene):
         self.play(Create(input_text1))
         self.play(Create(input_text2))
         #self.wait()
-
+        node5.set_color(ORANGE)
+        node6.set_color(ORANGE)
         group=VGroup(node1,node2,node3,node4,node5,node6,node7,group_x1,group_x2,linegroup)
         group.save_state()
         self.play(group.animate.scale(0.75).shift(2*DOWN))
@@ -136,15 +115,11 @@ class FBScene(Scene):
        
         
         y=func(x_1,x_2)
-        text_y=MathTex(f"y=x_1+x_2+x_1*x_2")
-        text_y.move_to(UP*3.5+RIGHT*4.8).scale(0.75)
+        text_y=MathTex(f"y={y}")
+        text_y.move_to(UP*3.5+RIGHT*5).scale(0.8)
         self.play(Create(text_y))
         self.wait()
-        
-        text_lr=Tex(f"learning~rate={lr}")
-        text_lr.move_to(UP*3.5+4.8*LEFT).scale(0.75)
-        self.play(Create(text_lr))
-        self.wait()
+
         #----------正向传播开始--------------
         value_w=[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7]
         #----------文字标注-----------------
@@ -157,19 +132,16 @@ class FBScene(Scene):
         for i in range(200):
             h1=w11*x_1+w12*x_2
             h2=w21*x_1+w22+x_2
-            o1=act(h1)
-            o2=act(h2)
+            o1=sig(h1)
+            o2=sig(h2)
             out=w31*o1+w32*o2
             e_hat=out-y
-            if abs(e_hat)<1e-6:
-                print(i) 
-                break
             p_w31=e_hat*o1
             p_w32=e_hat*o2
-            p_w11=e_hat*w31*p_act(h1)*x_1
-            p_w12=e_hat*w31*p_act(h1)*x_2
-            p_w21=e_hat*w32*p_act(h2)*x_1
-            p_w22=e_hat*w32*p_act(h2)*x_2
+            p_w11=e_hat*w31*p_sig(h1)*x_1
+            p_w12=e_hat*w31*p_sig(h1)*x_2
+            p_w21=e_hat*w32*p_sig(h2)*x_1
+            p_w22=e_hat*w32*p_sig(h2)*x_2
             
             w11=w11-0.1*p_w11
             w12=w12-0.1*p_w12
@@ -265,81 +237,39 @@ class FBScene(Scene):
         self.wait()
     
 
-
-
-        #----------------
-        # 创建激活函数文本
-        self.play(FadeOut(text_y))
-        activ = Text(f"{act_name}").scale(0.5)
-
-        activ.move_to(UP+RIGHT*2.35)
-        activ.shift(UP * 0.3)
-        self.play(Write(activ))
-        self.wait(1)
-
-        # 创建坐标轴
-        #ax = Axes(x_range=[-2, 2, 1], y_range=[0, 2, 1]).scale(0.3)
-        ax = Axes(x_range=[-x_range, x_range, x_step], y_range=[y_down, y_up, y_step]).scale(0.3)
-
-        ax.next_to(activ, UP)
-        self.play(Create(ax))
-        self.wait(1)
-
-        # 创建ReLU激活函数
-        actfunc = ax.plot(lambda x : act(x), x_range=[-x_range,x_range], color=BLUE)
-        self.play(Create(actfunc))
-        self.wait(1)
-
-
-        axegroup=VGroup(activ,ax,actfunc)
-        
-
         
         #----------------计算o1-------------------
         
-        show_text_o1=MathTex(f"{act_name}(h_1)=o_1")
-
+        show_text_o1=MathTex("Sigmoid(h_1)=o_1")
         show_text_o1.move_to(UP*3)
         self.play(Create(show_text_o1))
         self.wait()
         
-        o1=round(act(h1),3)
-        text=Tex(f"{act_name}({h1})={o1}")
+        o1=round(sig(h1),3)
+        text=Tex(f"sig({h1})={o1}")
         text.move_to(UP*3)
         self.play(Transform(show_text_o1,text))
         self.wait()
         
-        at_point = Dot(ax.coords_to_point(o1, act(o1)), color=RED)
-        self.play(Transform(show_text_o1, at_point))
-        self.wait(1)
-        
-        
         text_o1=MathTex(f"o_1={o1}")
         text_o1.move_to(UP*3)
         self.play(Transform(show_text_o1,text_o1))
-        
-        
         self.play(FadeOut(show_text_h1))
         self.play(show_text_o1.animate.scale(0.5).move_to(node5))
         self.wait()
         
         #----------------计算o2-------------------
         
-        show_text_o2=MathTex(f"{act_name}(h_2)=o_2")        
+        show_text_o2=MathTex("Sigmoid(h_2)=o_2")
         show_text_o2.move_to(UP*3)
         self.play(Create(show_text_o2))
         self.wait()
         
-        o2=round(act(h2),3)
-        text=MathTex(f"{act_name}({h2})={o2}")
+        o2=round(sig(h2),3)
+        text=MathTex(f"sig({h2})={o2}")
         text.move_to(UP*3)
         self.play(Transform(show_text_o2,text))
         self.wait()
-        
-        at_point = Dot(ax.coords_to_point(o2, act(o2)), color=RED)
-        self.play(Transform(show_text_o2, at_point))
-        self.wait(1)
-        
         
         text_o2=MathTex(f"o_2={o2}")
         text_o2.move_to(UP*3)
@@ -347,11 +277,7 @@ class FBScene(Scene):
         self.play(FadeOut(show_text_h2))
         self.play(show_text_o2.animate.scale(0.5).move_to(node6))
         self.wait()
-
-        #-----------------
-        self.play(FadeOut(axegroup))
-        self.play(FadeIn(text_y))
-        
+    
         #----------------计算y_hat-------------------
         
         
@@ -390,7 +316,7 @@ class FBScene(Scene):
         
         #--误差反向传播的计算--
         equation = MathTex(
-            r"Err=\frac{1}{2}(out-y)^2"
+            f"Err=(out-y)^2"
         )
         equation.next_to(text_out,DOWN).scale(0.5)
         self.play(Create(equation))
@@ -437,25 +363,21 @@ class FBScene(Scene):
         text_pw11.next_to(text_pw32,DOWN,buff=0).scale(0.5)
         up_text_pw11.next_to(text_pw32,DOWN,buff=0).scale(0.5)
         self.play(Create(text_pw11))
-        self.wait()
         self.play(Transform(text_pw11,up_text_pw11))
         
         text_pw12.next_to(text_pw11,DOWN,buff=0).scale(0.5)
         up_text_pw12.next_to(text_pw11,DOWN,buff=0).scale(0.5)
         self.play(Create(text_pw12))
-        self.wait()
         self.play(Transform(text_pw12,up_text_pw12))
         
         text_pw21.next_to(text_pw12,DOWN,buff=0).scale(0.5)
         up_text_pw21.next_to(text_pw12,DOWN,buff=0).scale(0.5)
         self.play(Create(text_pw21))
-        self.wait()
         self.play(Transform(text_pw21,up_text_pw21))
         
         text_pw22.next_to(text_pw21,DOWN,buff=0).scale(0.5)
         up_text_pw22.next_to(text_pw21,DOWN,buff=0).scale(0.5)
         self.play(Create(text_pw22))
-        self.wait()
         self.play(Transform(text_pw22,up_text_pw22))
         self.wait()
         
@@ -488,10 +410,10 @@ class FBScene(Scene):
         dw31=round((y_hat-y)*o1,4)
         dw32=round((y_hat-y)*o2,3)
         
-        dw11=round((y_hat-y)*value_w[5]*p_act(h1)*x_1,3)
-        dw12=round((y_hat-y)*value_w[5]*p_act(h1)*x_2,3)
-        dw21=round((y_hat-y)*value_w[6]*p_act(h2)*x_1,3)
-        dw22=round((y_hat-y)*value_w[6]*p_act(h2)*x_2,3)
+        dw11=round((y_hat-y)*value_w[5]*p_sig(h1)*x_1,3)
+        dw12=round((y_hat-y)*value_w[5]*p_sig(h1)*x_2,3)
+        dw21=round((y_hat-y)*value_w[6]*p_sig(h2)*x_1,3)
+        dw22=round((y_hat-y)*value_w[6]*p_sig(h2)*x_2,3)
         
         text_dw11=MathTex(f"\\frac{{\partial Err}}{{\partial W_{{11}}}}={dw11}",font_size=30)
         text_dw11.next_to(text11,DOWN,buff=0.1).scale(0.75).set_color(RED)

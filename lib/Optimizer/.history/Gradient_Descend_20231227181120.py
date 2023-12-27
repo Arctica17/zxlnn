@@ -93,10 +93,9 @@ class PlotFunctionGraph(Scene):
             if min_value > f1(re(point)):
                 min_value=f1(re(point))
         min_text=Tex(f"Min~is~{min_value:.5f}")
-        lr_text=Tex(f"learning~rate~is~{lr:.3f}")
+        
         self.play(ShowCreation(min_text.to_corner(UL)),run_time=0.2)
-        lr_text.next_to(min_text,DOWN)
-        self.play(ShowCreation(lr_text),run_time=0.2)
+    
         for i in range(epochs):
             # 曲线上的沿梯度下降的点
             start_dot = Dot(fill_color=RED)
@@ -120,7 +119,7 @@ class PlotFunctionGraph(Scene):
             
             
             grad=numberical_grandient(f1,x)
-            grad_text=Tex(f"gradient~is~{abs(grad):.5f}")
+            grad_text=Tex(f"gradient~is~{grad:.5f}")
             self.play(ShowCreation(grad_text.to_corner(UR)),run_time=0.2)
             #self.wait(0.25)
             
