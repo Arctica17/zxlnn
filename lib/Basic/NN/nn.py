@@ -183,24 +183,27 @@ class NeuralNetworkMobject(VGroup):
     
     def get_forward_animation(self):
         args = SimpleNamespace(**self.settings)
-        animation = AnimationGroup
+        animation = AnimationGroup()
+
         size = len(self.layer_sizes)
-        for i in range(len):
-            animation = AnimationGroup(*[
+        for i in range(size):
+            circle_animation = AnimationGroup(*[
                 Create(neuron) for neuron in self.layers[i].neurons
             ], lag_ratio=0)
 
+            animation = AnimationGroup(*[animation, circle_animation], lag_ratio=1)
+
             if(self.layer_sizes[i] > args.max_shown_neurons):
-                animation += AnimationGroup(*[animation, 
+                animation = AnimationGroup(*[animation, 
                                             Write(self.layers[i].dots), 
                                             Create(self.layers[i].brace),
-                                            Write(self.layers[i].brace_label)])
+                                            Write(self.layers[i].brace_label)], lag_ratio=1)
             
-            if(i == size - 1):
-                animation += AnimationGroup(*[animation,
-                                             Write(self.output_labels)])
+            if(i == size - 1 and args.include_output_labels):
+                animation = AnimationGroup(*[animation,
+                                             Write(self.output_labels)], lag_ratio=1)
             
-            animation += Animation(Wait(1))
+            animation = AnimationGroup(*[animation, Wait(1)], lag_ratio=1)
 
             if(i < size - 1):
                 points = VGroup(*[
@@ -213,8 +216,11 @@ class NeuralNetworkMobject(VGroup):
 
                 self.add(tails)
                 
-                animation += AnimationGroup(*[
+                dl_animation = AnimationGroup(*[
                     MoveAlongPath(d, l) for d, l in zip(points, self.edge_groups[i])
                 ])
                 
-                animation += Animation(Uncreate(points))
+                animation = AnimationGroup(*[
+                    animation, dl_animation, Uncreate(points)
+                ], lag_ratio=1)
+        return animation

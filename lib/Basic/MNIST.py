@@ -24,34 +24,34 @@ class Component(ThreeDScene):
         nr_correct = 0
         epochs = 3
 
-        ### 训练epoch ###
-        for epoch in range(epochs):
-            for img, l in zip(images, labels):
-                img.shape += (1,)
-                l.shape += (1,)
-                # Forward propagation input -> hidden
-                h_pre = b_i_h + w_i_h @ img
-                h = 1 / (1 + np.exp(-h_pre))
-                # Forward propagation hidden -> output
-                o_pre = b_h_o + w_h_o @ h
-                o = 1 / (1 + np.exp(-o_pre))
+        # ### 训练epoch ###
+        # for epoch in range(epochs):
+        #     for img, l in zip(images, labels):
+        #         img.shape += (1,)
+        #         l.shape += (1,)
+        #         # Forward propagation input -> hidden
+        #         h_pre = b_i_h + w_i_h @ img
+        #         h = 1 / (1 + np.exp(-h_pre))
+        #         # Forward propagation hidden -> output
+        #         o_pre = b_h_o + w_h_o @ h
+        #         o = 1 / (1 + np.exp(-o_pre))
 
-                # Cost / Error calculation
-                e = 1 / len(o) * np.sum((o - l) ** 2, axis=0)
-                nr_correct += int(np.argmax(o) == np.argmax(l))
+        #         # Cost / Error calculation
+        #         e = 1 / len(o) * np.sum((o - l) ** 2, axis=0)
+        #         nr_correct += int(np.argmax(o) == np.argmax(l))
 
-                # Backpropagation output -> hidden (cost function derivative)
-                delta_o = o - l
-                w_h_o += -learn_rate * delta_o @ np.transpose(h)
-                b_h_o += -learn_rate * delta_o
-                # Backpropagation hidden -> input (activation function derivative)
-                delta_h = np.transpose(w_h_o) @ delta_o * (h * (1 - h))
-                w_i_h += -learn_rate * delta_h @ np.transpose(img)
-                b_i_h += -learn_rate * delta_h
+        #         # Backpropagation output -> hidden (cost function derivative)
+        #         delta_o = o - l
+        #         w_h_o += -learn_rate * delta_o @ np.transpose(h)
+        #         b_h_o += -learn_rate * delta_o
+        #         # Backpropagation hidden -> input (activation function derivative)
+        #         delta_h = np.transpose(w_h_o) @ delta_o * (h * (1 - h))
+        #         w_i_h += -learn_rate * delta_h @ np.transpose(img)
+        #         b_i_h += -learn_rate * delta_h
 
-            # Show accuracy for this epoch
-            print(f"Acc: {round((nr_correct / images.shape[0]) * 100, 2)}%")
-            nr_correct = 0
+        #     # Show accuracy for this epoch
+        #     print(f"Acc: {round((nr_correct / images.shape[0]) * 100, 2)}%")
+        #     nr_correct = 0
         
         index = int(input("Enter a number (0 - 59999): "))
 
