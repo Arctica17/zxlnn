@@ -54,19 +54,19 @@
   <img src="examples/3MNIST手写数字识别过程.gif" alt="3MNIST手写数字识别过程" style="width: 75%;">
 </p>
 
----
+#### 4 神经网络 (NN) 的万能性
 
-### Optimizer
+- 本动画展示了神经网络的广泛适用与万能性。
 
-#### 4 神经网络 (NN) 的训练过程
-
-- 本动画展示了神经网络的训练过程，展示了神经网络的万能性。
-
-  *This animation displays the training process of NNs, covering every step from data input to output.*
+  *The animation demonstrates the wide applicability and universality of neural networks.*
 
 <p align="center">
   <img src="examples/3.5神经网络的万能性.gif" alt="3.5神经网络的万能性" style="width: 75%;">
 </p>
+
+---
+
+### Optimizer
 
 #### 5 梯度下降的优化策略
 
@@ -90,7 +90,7 @@
 
 ---
 
-### CNN
+### Convolution
 
 #### 7 卷积神经网络 (CNN) 的原理
 
@@ -125,21 +125,27 @@
 
 ---
 
-### EX
+### Extra
 
-### 11 划分子句集
+#### 11 划分子句集
+
+*Partitioning of Clause Sets*
 
 <p align="center">
   <img src="examples/11划分子句集.gif" alt="11划分子句集" style="width: 75%;">
 </p>
 
-### 12 线性回归
+#### 12 线性回归
+
+*Linear Regression*
 
 <p align="center">
   <img src="examples/12线性回归.gif" alt="12线性回归" style="width: 75%;">
 </p>
 
-### 13 八数码问题
+#### 13 八数码问题
+
+*Eight-Digit Problem*
 
 <p align="center">
   <img src="examples/13八数码解题.gif" alt="13八数码解题" style="width: 75%;">
@@ -150,7 +156,7 @@
 
 感谢阅读 README。我们希望这个项目对您有所帮助，我们欢迎任何形式的贡献，包括反馈、问题报告和代码提交。
 
-特别感谢所有贡献者，您的努力使得这个项目得以持续发展和改进。
+特别感谢贡献者 Junital，Yaaame，Arctica，你们的努力使得这个项目得以持续发展和改进。
 
 如有任何问题，请在我们的 [GitHub issue 页面](https://github.com/Arctica17/zxlnn/issues) 提出问题。
 
